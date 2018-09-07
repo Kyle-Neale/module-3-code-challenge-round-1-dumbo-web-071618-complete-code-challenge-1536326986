@@ -19,15 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     likes.innerText = imageObj.like_count
 
     imageObj.comments.forEach(comment => {
-      let deleteBttn = document.createElement("button")
-
-      let commentLi = document.createElement("li");
-      commentLi.innerText = comment.content;
-      commentLi.dataset.id = comment.id;
-      commentSection.appendChild(commentLi);
-      deleteBttn.innerText = "Delete Comment"
-      commentLi.appendChild(deleteBttn)
-
+      commentSection.appendChild(new Comment(comment).render());
     })
   })
 
@@ -42,19 +34,14 @@ document.addEventListener('DOMContentLoaded', function() {
   commentForm.addEventListener("submit", (event) => {
     event.preventDefault();
     let formValue = commentForm.querySelector("#comment_input");
-    ImageAdapter.updateComments(imageId, formValue.value)
-    .then(commentObj => {
-      let deleteBttn = document.createElement("button")
-      deleteBttn.innerText = "Delete Comment"
 
-      let commentLi = document.createElement("li");
-      commentLi.innerText = formValue.value;
-      commentLi.dataset.id = commentObj.id;
-      commentLi.appendChild(deleteBttn)
-      commentSection.appendChild(commentLi);
-
-      formValue.value = "";
+    let commentLi = new Comment({
+      id: parseInt(commentSection.children[commentSection.children.length - 1].getAttribute('data-id')) + 1,
+      content: formValue.value
     })
+    
+    commentSection.appendChild(commentLi.render())
+    ImageAdapter.updateComments(imageId, formValue.value)
   })
 
   commentSection.addEventListener("click", (event) => {
